@@ -35,7 +35,9 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 
 		http.csrf().disable();
-		http.authorizeRequests().antMatchers("/**").hasIpAddress(environment.getProperty("gateway.ip"))
+		http
+			.authorizeRequests()
+			.antMatchers("/**").hasIpAddress(environment.getProperty("gateway.ip"))
 			.and()
 			.addFilter(getAuthenticationFilter());
 		http.headers().frameOptions().disable();
@@ -44,26 +46,24 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
 	public AuthenticationFilter getAuthenticationFilter() throws Exception {
 
-		/* I modified here the creation of the new Instance of AuthenticationFilter
-		 * because I created a constructor in AuthenticationFilter class. 
-		 * I pass to the constructor AuthenticationFilter 2 objects which are @Autowired here 
-		 * 1. userService 
-		 * 2. environment
+		/*
+		 * I modified here the creation of the new Instance of AuthenticationFilter
+		 * because I created a constructor in AuthenticationFilter class. I pass to the
+		 * constructor AuthenticationFilter 2 objects which are @Autowired here 1.
+		 * userService 2. environment
 		 */
 
 		/*
 		 * Since I'm passing to the AuthenticationFilter userService & environment I can
-		 * comment this line here :
-		 * 	  ->  authenticationFilter.setAuthenticationManager(authenticationManager()); 
+		 * comment this line here : ->
+		 * authenticationFilter.setAuthenticationManager(authenticationManager());
 		 * 
-		 * Now , I and pass authenticationManager() as an 
-		 * argument to the Constructor of AuthenticationFilter
+		 * Now , I and pass authenticationManager() as an argument to the Constructor of
+		 * AuthenticationFilter
 		 */
 
-		
-		AuthenticationFilter authenticationFilter = new AuthenticationFilter(userService, 
-																			 environment,
-																			 authenticationManager());
+		AuthenticationFilter authenticationFilter = new AuthenticationFilter(userService, environment,
+				authenticationManager());
 		authenticationFilter.setFilterProcessesUrl(environment.getProperty("login.url.path"));
 		return authenticationFilter;
 	}

@@ -9,6 +9,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,6 +29,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
+	private static Logger LOGGER = LoggerFactory.getLogger(AuthenticationFilter.class);
 	// I add these 2 private fields in order to use them here in the class
 	// Now, I also need to change in class of WebSecurity the method of
 	// getAuthenticationFilter(
@@ -69,7 +72,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
 		UserDto userDetails = userService.getUserDetailsByEmail(userName);
 
-		System.out.println(environment.getProperty("token.expiration_time"));
+		LOGGER.info(environment.getProperty("token.expiration_time"));
 		
 		String token = Jwts.builder()
 				.setSubject(userDetails.getUserId())

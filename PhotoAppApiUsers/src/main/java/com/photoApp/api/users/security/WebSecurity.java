@@ -36,7 +36,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
 		http.csrf().disable();
 		http
-			.authorizeRequests()
+			.authorizeRequests()			
 			.antMatchers("/**").hasIpAddress(environment.getProperty("gateway.ip"))
 			.and()
 			.addFilter(getAuthenticationFilter());

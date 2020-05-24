@@ -27,7 +27,7 @@ public class UserEntity implements Serializable {
 	@Column(nullable = false, length = 120, unique = true)
 	private String email;
 
-	// this useId is public
+	// this userId is public
 	// will be used during HTTP request
 	// Will be alpha numeric
 	@Column(nullable = false, unique = true)

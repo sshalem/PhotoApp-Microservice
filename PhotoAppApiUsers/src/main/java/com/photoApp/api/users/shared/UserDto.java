@@ -1,17 +1,21 @@
 package com.photoApp.api.users.shared;
 
 import java.io.Serializable;
+import java.util.List;
+
+import com.photoApp.api.users.model.AlbumsResponseModel;
 
 public class UserDto implements Serializable {
 
 	private static final long serialVersionUID = -7235203413891101798L;
-	
+
 	private String firstName;
 	private String lastName;
 	private String password;
 	private String email;
 	private String userId;
 	private String encryptedPassword;
+	private List<AlbumsResponseModel> albums;
 
 	public UserDto() {
 		super();
@@ -63,6 +67,14 @@ public class UserDto implements Serializable {
 
 	public void setEncryptedPassword(String encryptedPassword) {
 		this.encryptedPassword = encryptedPassword;
+	}
+
+	public List<AlbumsResponseModel> getAlbums() {
+		return albums;
+	}
+
+	public void setAlbums(List<AlbumsResponseModel> albums) {
+		this.albums = albums;
 	}
 
 }

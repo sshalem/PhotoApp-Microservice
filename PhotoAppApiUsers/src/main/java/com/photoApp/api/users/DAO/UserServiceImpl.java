@@ -6,37 +6,41 @@ import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import com.photoApp.api.users.entity.UserEntity;
 import com.photoApp.api.users.model.AlbumsResponseModel;
 import com.photoApp.api.users.repository.UserRepository;
 import com.photoApp.api.users.shared.UserDto;
 
+import feign.FeignException;
+
 @Service
 public class UserServiceImpl implements UserService {
 
+	Logger logger = LoggerFactory.getLogger(this.getClass());
+
 	private UserRepository userRepo;
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
-	private RestTemplate restTemplate;
+//	private RestTemplate restTemplate;
+	private AlbumsServiceClient albumsServiceClient;
 	private Environment env;
 
 	@Autowired
 	public UserServiceImpl(UserRepository userRepo, BCryptPasswordEncoder bCryptPasswordEncoder,
-			RestTemplate restTemplate, Environment env) {
+			AlbumsServiceClient albumsServiceClient, Environment env) {
 		this.userRepo = userRepo;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-		this.restTemplate = restTemplate;
+//		this.restTemplate = restTemplate;
+		this.albumsServiceClient = albumsServiceClient;
 		this.env = env;
 	}
 
@@ -100,15 +104,27 @@ public class UserServiceImpl implements UserService {
 			throw new UsernameNotFoundException("user not found");
 		}
 		UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
-		
-		// albums-ws , because this is what Eureka discvoery has when Albums Mic serv runs		
-		String albumsUrl = String.format(env.getProperty("albums.url"), userId);
-		
-		ResponseEntity<List<AlbumsResponseModel>> albumsListResponse = restTemplate.exchange(albumsUrl, HttpMethod.GET,
-				null, new ParameterizedTypeReference<List<AlbumsResponseModel>>() {
-				});
 
-		List<AlbumsResponseModel> albumsList = albumsListResponse.getBody();
+		// albums-ws , because this is what Eureka discvoery has when Albums Mic serv
+		// runs
+		/*
+		 * RestTemplate Request -------------------- String albumsUrl =
+		 * String.format(env.getProperty("albums.url"), userId);
+		 * 
+		 * ResponseEntity<List<AlbumsResponseModel>> albumsListResponse =
+		 * restTemplate.exchange(albumsUrl, HttpMethod.GET, null, new
+		 * ParameterizedTypeReference<List<AlbumsResponseModel>>() { });
+		 * 
+		 * List<AlbumsResponseModel> albumsList = albumsListResponse.getBody();
+		 */
+
+		// Feign Client
+		List<AlbumsResponseModel> albumsList = null;
+		try {
+			albumsList = albumsServiceClient.getAlbums(userId);
+		} catch (FeignException e) {
+			logger.error(e.getLocalizedMessage());
+		}
 
 		userDto.setAlbums(albumsList);
 

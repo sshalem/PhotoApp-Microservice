@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.client.RestTemplate;
 
+import com.photoApp.api.users.exceptions.FeignErrorDecoder;
+
 import feign.Logger;
 
 @SpringBootApplication
@@ -34,5 +36,10 @@ public class PhotoAppApiUsersApplication {
 	@Bean
 	Logger.Level getFeignLogging() {
 		return Logger.Level.FULL;
+	}
+ 
+	@Bean
+	public FeignErrorDecoder getFeignErrorDecoder() {
+		return new FeignErrorDecoder();
 	}
 }

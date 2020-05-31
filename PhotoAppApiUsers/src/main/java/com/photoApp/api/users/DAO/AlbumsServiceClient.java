@@ -8,11 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.photoApp.api.users.model.AlbumsResponseModel;
 
-// we need to put the name of the micro service as it will be registered with Eureka 
-// and we can find it in the application.properties of ALbums Micro serv
-
-// Once We add Hystrix Circuit breaker , I added the fallback = AlbumsFallback.class
-@FeignClient(name = "albums-ws", fallback = AlbumsFallback.class)
+@FeignClient(name = "albums-ws", fallbackFactory = AlbumsFallbackFactory.class)
 public interface AlbumsServiceClient {
 
 	@GetMapping("/users/{id}/albums")

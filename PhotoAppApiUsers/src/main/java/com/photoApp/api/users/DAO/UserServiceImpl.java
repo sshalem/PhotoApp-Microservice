@@ -127,8 +127,10 @@ public class UserServiceImpl implements UserService {
 //		}
 
 		// With adding FeignErrorDecoder
+		logger.info("BEFORE - calling albums Mic Serv");
 		List<AlbumsResponseModel> albumsList = albumsServiceClient.getAlbums(userId);
-
+		logger.info("AFTER - calling albums Mic Serv");
+		
 		userDto.setAlbums(albumsList);
 
 		return userDto;
